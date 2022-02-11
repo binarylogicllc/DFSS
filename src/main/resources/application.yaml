@@ -1,0 +1,46 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      group:
+        custom:
+          include: db,ping
+          show-components: always
+          show-details: always
+spring:
+  flyway:
+    enabled: false
+  main:
+    allow-bean-definition-overriding: 'true'
+  jpa:
+    hibernate:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL10Dialect
+    show-sql: 'false'
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: '5'
+    password: Fuel@Pay#21
+    username: fuelpay
+    url: jdbc:postgresql://localhost:5432/fuelpay
+  application:
+    name: dfps
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: 'false'
+
+account:
+  key: '!A%D*G-KaPdRgUkXp2s5v8y/B?E(H+Mb'
+subsidy:
+  code: '001'
+scheduler:
+  fixedDelay: 30000
+timezone: Asia/Bangkok
+logging:
+  level:
+    root: info

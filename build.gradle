@@ -1,0 +1,80 @@
+plugins {
+    id 'org.springframework.boot' version '2.2.4.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'java'
+}
+
+group = 'com.ca'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'de.codecentric:spring-boot-admin-starter-client:2.2.2'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'io.fusionauth:fusionauth-jwt:3.2.0'
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+    implementation 'io.springfox:springfox-swagger2:2.9.2'
+    implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+    implementation 'org.flywaydb:flyway-core:6.4.0'
+    runtimeOnly 'org.postgresql:postgresql'
+    implementation 'com.twilio.sdk:twilio:8.9.0'
+    implementation 'commons-codec:commons-codec:1.15'
+    implementation 'com.google.zxing:core:3.4.1'
+    implementation 'com.google.zxing:javase:3.4.1'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+
+    compileOnly 'org.projectlombok:lombok:1.18.4'
+    annotationProcessor 'org.projectlombok:lombok:1.18.4'
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+
+    configurations {
+        all {
+            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+task copyToLib(type: Copy) {
+    from configurations.runtimeClasspath
+    into "$buildDir/libs/lib"
+}
+
+task('copyConfig', type: Copy) {
+    from 'src/main/resources'
+    include '*.properties'
+    include '*.xml'
+    into "$buildDir/libs/config"
+}
+
+bootJar.dependsOn(copyConfig)
+jar {
+    enabled true
+    manifest {
+        attributes(
+                "Implementation-Title": "scheduler",
+                "Implementation-Version": archiveVersion,
+                "Main-Class": "com.ca.scheduler.DigitalFuelSchedulerApplication",
+                "Class-Path": configurations.runtimeClasspath.collect { "lib/" + it.getName() }.join(' '))
+    }
+}
+
+task unpack(type: Copy) {
+    dependsOn bootJar
+    from(zipTree(tasks.bootJar.outputs.files.singleFile))
+    into("build/dependency")
+}

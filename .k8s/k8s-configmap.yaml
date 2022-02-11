@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: fuelpay
+  name: config-digital-fuel-scheduler-service
+data:
+  application.yml: |
+    management:
+      endpoints:
+        web:
+          exposure:
+            include: '*'
+      endpoint:
+        health:
+          group:
+            custom:
+              include: db,ping
+              show-components: always
+              show-details: always
+    spring:
+      flyway:
+        enabled: false
+      jpa:
+        hibernate:
+          ddl-auto: validate
+        properties:
+          hibernate:
+            dialect: org.hibernate.dialect.PostgreSQL10Dialect
+            jdbc.time_zone: 'Asia/Muscat'
+        show-sql: 'false'
+        format_sql: 'false'
+      datasource:
+        driver-class-name: org.postgresql.Driver
+        hikari:
+          maximum-pool-size: '50'
+          connection-init-sql: SET TIME ZONE 'Asia/Muscat'
+        password: Fuel@Pay#21
+        username: fuelpay
+        url: jdbc:postgresql://10.14.16.3:5432/fuelpay
+      application:
+        name: dfps
+      jackson:
+        serialization:
+          WRITE_DATES_AS_TIMESTAMPS: 'false'
+    account:
+      key: '!A%D*G-KaPdRgUkXp2s5v8y/B?E(H+Mb'
+    subsidy:
+      code: '001'
+    scheduler:
+      fixedDelay: 30000
+
+    logging:
+      level:
+        root: info
+        org.hibernate.type: error
+

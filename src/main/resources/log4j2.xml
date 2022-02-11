@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Appenders>
+		<!-- Console Appender -->
+		<Console name="ConsoleAppender" target="SYSTEM_OUT"
+			follow="true">
+			<PatternLayout>
+				<pattern>%d{HH:mm:ss.SSS} | %5p | %logger{25} | %m%n</pattern>
+				<charset>utf8</charset>
+			</PatternLayout>
+		</Console>
+
+		<!-- Rolling File Appender -->
+		<RollingFile name="FileAppender"
+			fileName="./logs/payment.log"
+			filePattern="./logs/$${date:yyyy-MM}/payment%d{-dd-MMMM-yyyy}-%i.log.gz">
+			<PatternLayout>
+				<pattern>%d{HH:mm:ss.SSS} | %5p | %logger{25} | %m%n</pattern>
+				<charset>utf8</charset>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="30 MB" />
+			</Policies>
+		</RollingFile>
+	</Appenders>
+
+	<Loggers>
+		<Root level="info">
+			<AppenderRef ref="ConsoleAppender" />
+			<AppenderRef ref="FileAppender" />
+		</Root>
+	</Loggers>
+</Configuration>
