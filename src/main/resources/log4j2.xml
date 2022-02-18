@@ -2,32 +2,14 @@
 <Configuration>
 	<Appenders>
 		<!-- Console Appender -->
-		<Console name="ConsoleAppender" target="SYSTEM_OUT"
-			follow="true">
-			<PatternLayout>
-				<pattern>%d{HH:mm:ss.SSS} | %5p | %logger{25} | %m%n</pattern>
-				<charset>utf8</charset>
-			</PatternLayout>
+		<Console name="ConsoleJson" target="SYSTEM_OUT" follow="true">
+			<JsonLayout complete="false" compact="true" eventEol="true" properties="true"/>
 		</Console>
-
-		<!-- Rolling File Appender -->
-		<RollingFile name="FileAppender"
-			fileName="./logs/payment.log"
-			filePattern="./logs/$${date:yyyy-MM}/payment%d{-dd-MMMM-yyyy}-%i.log.gz">
-			<PatternLayout>
-				<pattern>%d{HH:mm:ss.SSS} | %5p | %logger{25} | %m%n</pattern>
-				<charset>utf8</charset>
-			</PatternLayout>
-			<Policies>
-				<SizeBasedTriggeringPolicy size="30 MB" />
-			</Policies>
-		</RollingFile>
 	</Appenders>
 
 	<Loggers>
 		<Root level="info">
-			<AppenderRef ref="ConsoleAppender" />
-			<AppenderRef ref="FileAppender" />
+			<AppenderRef ref="ConsoleJson" />
 		</Root>
 	</Loggers>
 </Configuration>

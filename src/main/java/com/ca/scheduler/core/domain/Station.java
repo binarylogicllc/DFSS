@@ -45,6 +45,9 @@ public class Station  extends EntityAudit {
     @Column(name = "contact_no")
     private String contact_no;
 
+    @Column(name = "vat_in")
+    private String vatIn;
+
     @Column(name = "email")
     private String email;
 
@@ -57,6 +60,27 @@ public class Station  extends EntityAudit {
     @Column(name = "active")
     @Type(type = "yes_no")
     private Boolean active;
+
+    @Column(name = "car_wash")
+    @Type(type = "yes_no")
+    private Boolean carWash;
+
+    @Column(name = "c_store")
+    @Type(type = "yes_no")
+    private Boolean cstore;
+
+    @Column(name = "atm")
+    @Type(type = "yes_no")
+    private Boolean atm;
+
+    @Column(name = "fuel_m98")
+    @Type(type = "yes_no")
+    private Boolean fuelM98;
+
+    @Column(name = "repair_workshop")
+    @Type(type = "yes_no")
+    private Boolean repairWorkshop;
+
 
     @Column(name = "merchant_id")
     private String merchantId;

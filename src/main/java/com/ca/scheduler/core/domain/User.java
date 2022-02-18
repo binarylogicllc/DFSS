@@ -40,7 +40,7 @@ public class User extends DomainBase{
     private String phone;
 
     @Column(name = "CUSTOMER_ID")
-    private Long customerId;
+    private String customerId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "USER_TYPE")
