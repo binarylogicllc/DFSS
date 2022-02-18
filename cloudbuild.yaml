@@ -13,12 +13,12 @@ steps:
     args: ['apply', '-f', '.k8s/']
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=asia-south1'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=fuel-pay-cluster'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=fuelpay-cluster-1'
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['set', 'image', 'deployment/digital-fuel-scheduler-service-pod', 'digital-fuel-scheduler-service=gcr.io/$PROJECT_ID/digital-fuel-scheduler-service:$TAG_NAME', '-nfuelpay']
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=asia-south1'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=fuel-pay-cluster'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=fuelpay-cluster-1'
 images: [
     'gcr.io/$PROJECT_ID/digital-fuel-scheduler-service:$TAG_NAME',
     'gcr.io/$PROJECT_ID/digital-fuel-scheduler-service:latest'

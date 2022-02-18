@@ -38,6 +38,41 @@ spec:
       containers:
       - name: digital-fuel-scheduler-service
         image: gcr.io/fuel-pay-uat/digital-fuel-scheduler-service:latest
+        env:
+          - name: JAVA_OPTS
+            value: "-Xms256m -Xmx256m -Djava.security.egd=file:/dev/./urandom"
+          - name: TIME_ZONE
+            value: "-Dlogback.timezone=Asia/Muscat"
+          - name: DB_FUELPAY_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: fuel-pay-secret
+                key: db-fuelpay-username
+          - name: DB_FUELPAY_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: fuel-pay-secret
+                key: db-fuelpay-password        
+          - name: CARD_FUELPAY_KEYA
+            valueFrom:
+              secretKeyRef:
+                name: fuel-pay-secret
+                key: card-fuelpay-keya       
+          - name: CARD_FUELPAY_KEYB
+            valueFrom:
+              secretKeyRef:
+                name: fuel-pay-secret
+                key: card-fuelpay-keyb
+          - name: CARD_FUELPAY_TOKEN_KEY
+            valueFrom:
+              secretKeyRef:
+                name: fuel-pay-secret
+                key: card-fuelpay-token-key
+          - name: ACCOUNT_FUELPAY_KEY
+            valueFrom:
+              secretKeyRef:
+                name: fuel-pay-secret
+                key: account-fuelpay-key         
         volumeMounts:
           - name: volume-digital-fuel-scheduler-service
             mountPath: /home/
