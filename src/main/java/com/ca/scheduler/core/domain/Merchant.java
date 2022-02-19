@@ -47,9 +47,6 @@ public class Merchant  extends EntityAudit {
     @Type(type = "yes_no")
     private Boolean active;
 
-    @Column(name = "tax_invoice_no")
-    private String taxInvoiceNo;
-
     @Column(name = "vat_in")
     private String vatIn;
 
