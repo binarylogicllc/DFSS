@@ -13,8 +13,6 @@ spec:
     name: default-port
   selector:
     app: digital-fuel-scheduler-service-pod
-  type: LoadBalancer
-
 ---
 apiVersion: apps/v1
 kind: Deployment
