@@ -36,6 +36,23 @@ spec:
       containers:
       - name: digital-fuel-scheduler-service
         image: gcr.io/fuel-pay-uat/digital-fuel-scheduler-service:latest
+        ports:
+          - containerPort: 8080
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        startupProbe:
+          tcpSocket:
+            port: 8080
+          failureThreshold: 30
+          periodSeconds: 10        
         env:
           - name: JAVA_OPTS
             value: "-Xms256m -Xmx256m -Djava.security.egd=file:/dev/./urandom"
