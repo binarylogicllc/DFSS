@@ -43,13 +43,9 @@ public class ForceUpdateService {
     @Scheduled(fixedRateString = "${scheduler.fixedDelay}")
     public void process() {
 
-        log.info("====================================START==========================================");
-        log.info("ForceUpdateService task started at :  "+ LocalDateTime.now());
-
         Optional<List<TerminalForceUpdateScheduler>> terminalForceUpdateSchedulerOptionals = terminalForceUpdateSchedulerRepository.findByScheduledAtLessThanAndStatus(LocalDateTime.now(), ForceUpdateSchedulerStatus.NEW);
 
         if(!terminalForceUpdateSchedulerOptionals.isPresent() || terminalForceUpdateSchedulerOptionals.get().size() == 0 ){
-            log.error("No Force Update Scheduler Task Found ");
             return;
         }
 
@@ -69,27 +65,33 @@ public class ForceUpdateService {
                     merchants.add(merchantRepository.findByMerchantId(terminalForceUpdateScheduler.getMerchantId()).get());
                 }
 
+                log.info("Updating Merchants:  " + merchants);
+
                 List<Station> stations = new ArrayList<>();
 
                 for (Merchant merchant : merchants) {
                     if (terminalForceUpdateScheduler.getStationId() != null && terminalForceUpdateScheduler.getStationId().equals("All")) {
-                        stations = stationRepository.findByMerchantId(merchant.getMerchantId()).get();
+                       Optional<List<Station>> stationList = stationRepository.findByMerchantId(merchant.getMerchantId());
+                       if(stationList.isPresent()) {
+                           stations = stationList.get();
+                       }
                     } else {
                         stations.add(stationRepository.findByMerchantIdAndStationId(merchant.getMerchantId(), terminalForceUpdateScheduler.getStationId()).get());
                     }
                 }
+                log.info("Updating Stations:   " + stations);
 
                 List<Terminal> terminals = new ArrayList<>();
                 for (Station station : stations) {
                     if (terminalForceUpdateScheduler.getTerminalId() != null && terminalForceUpdateScheduler.getTerminalId().equals("All")) {
-                        terminals = terminalRepository.findByStationId(station.getStationId()).get();
+                        Optional<List<Terminal>> terminalList = terminalRepository.findByStationId(station.getStationId());
+                        if(terminalList.isPresent()) {
+                            terminals = terminalList.get();
+                        }
                     } else {
                         terminals.add(terminalRepository.findByTerminalId(terminalForceUpdateScheduler.getTerminalId()).get());
                     }
                 }
-
-                log.info("Updating Merchants:  " + merchants);
-                log.info("Updating Stations:   " + stations);
                 log.info("Updating Terminals   " + terminals);
 
                 for (Terminal terminal : terminals) {
@@ -115,18 +117,16 @@ public class ForceUpdateService {
                     terminalParameter = terminalParameterRepository.findByTerminalIdAndParamName(terminal.getTerminalId(), ParamName.DIESELGO_RATE.name()).get();
                     terminalParameter.setParamValue(fuelProductRatesDieselGo.getRate().toPlainString());
                     terminalParameterRepository.save(terminalParameter);
+
                     log.info("Updating TerminalParam :  " + terminalParameter);
                 }
                 terminalForceUpdateScheduler.setStatus(ForceUpdateSchedulerStatus.COMPLETED);
             }catch (Exception e){
-                log.error("Error Force Update  Failed"+e);
+                log.error("Error Force Update  Failed",e);
                 terminalForceUpdateScheduler.setStatus(ForceUpdateSchedulerStatus.FAILED);
             }
             terminalForceUpdateSchedulerRepository.save(terminalForceUpdateScheduler);
         }
-
-        log.info("ForceUpdateService task ended at :  "+ LocalDateTime.now());
-        log.info("***********************************END*********************************************");
     }
 
 }
