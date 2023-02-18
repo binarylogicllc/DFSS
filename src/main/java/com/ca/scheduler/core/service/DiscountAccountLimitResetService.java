@@ -43,12 +43,17 @@ public class DiscountAccountLimitResetService {
         List<SubsidyAccountBalance> subsidyAccountBalanceList = subsidyAccountBalanceRepository.findAll();
         if(subsidyAccountBalanceList != null){
             for(SubsidyAccountBalance subsidyAccountBalance : subsidyAccountBalanceList){
-                subsidyAccountBalance.setAvailableLiter(subsidyAccountBalance.getAllocatedLiter());
-                subsidyAccountBalance.setUpdatedAt(LocalDateTime.now());
-                subsidyAccountBalance.setUpdatedBy("Batch");
-                subsidyAccountBalance.setSecureHash(computeHash(subsidyAccountBalance.getAvailableLiter()+""+subsidyAccountBalance.getAccount()));
-                subsidyAccountBalanceRepository.save(subsidyAccountBalance);
-                log.error("Updated Price : "+subsidyAccountBalance);
+                if(subsidyAccountBalance.getCurrentResetAt() != null && subsidyAccountBalance.getNextResetAt() != null
+                        && LocalDateTime.now().isAfter(subsidyAccountBalance.getNextResetAt()) && subsidyAccountBalance.getCurrentResetAt().isBefore(subsidyAccountBalance.getNextResetAt())) {
+                    subsidyAccountBalance.setAvailableLiter(subsidyAccountBalance.getAllocatedLiter());
+                    subsidyAccountBalance.setUpdatedAt(LocalDateTime.now());
+                    subsidyAccountBalance.setUpdatedBy("Batch");
+                    subsidyAccountBalance.setCurrentResetAt(LocalDateTime.now());
+                    subsidyAccountBalance.setNextResetAt(subsidyAccountBalance.getNextResetAt().plusMonths(1));
+                    subsidyAccountBalance.setSecureHash(computeHash(subsidyAccountBalance.getAvailableLiter()+""+subsidyAccountBalance.getAccount()));
+                    subsidyAccountBalanceRepository.save(subsidyAccountBalance);
+                    log.error("Updated Price Reset By Batch : "+subsidyAccountBalance);
+                }
             }
         }
         log.info("DiscountAccountLimitResetService task ended at :  "+ LocalDateTime.now());

@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "SUBSIDY_ACCOUNT_BALANCE")
@@ -35,4 +36,10 @@ public class SubsidyAccountBalance extends EntityAudit {
 
     @Column(name = "SECURE_HASH")
     private String secureHash;
+
+    @Column(name = "current_reset_at")
+    private LocalDateTime currentResetAt;
+
+    @Column(name = "next_reset_at")
+    private LocalDateTime nextResetAt;
 }
