@@ -10,6 +10,11 @@ management:
           include: db,ping
           show-components: always
           show-details: always
+
+spring.redis.host: localhost
+spring.redis.port: 32768
+spring.redis.password: redispw
+
 spring:
   flyway:
     enabled: false
