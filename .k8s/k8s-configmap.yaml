@@ -21,7 +21,8 @@ data:
 
     spring.redis.host: 10.68.177.3
     spring.redis.port: 6379
-          
+    spring.redis.password: efef1ceb-8f1b-42fb-ac50-4c2d4efa37d2
+      
     spring:
       flyway:
         enabled: false
