@@ -53,9 +53,7 @@ public class DiscountAccountLimitResetService {
         List<SubsidyAccountBalance> subsidyAccountBalanceList = subsidyAccountBalanceRepository.findAll();
         if(subsidyAccountBalanceList != null){
             for(SubsidyAccountBalance subsidyAccountBalance : subsidyAccountBalanceList){
-                log.info("before update price reset by batch : "+subsidyAccountBalance);
-                if(subsidyAccountBalance.getCurrentResetAt() != null && subsidyAccountBalance.getNextResetAt() != null
-                        && LocalDateTime.now().isAfter(subsidyAccountBalance.getNextResetAt()) && subsidyAccountBalance.getCurrentResetAt().isBefore(subsidyAccountBalance.getNextResetAt())) {
+                    log.info("before update price reset by batch : "+subsidyAccountBalance);
                     subsidyAccountBalance.setAvailableLiter(subsidyAccountBalance.getAllocatedLiter());
                     subsidyAccountBalance.setUpdatedAt(LocalDateTime.now());
                     subsidyAccountBalance.setUpdatedBy("Batch");
@@ -64,7 +62,6 @@ public class DiscountAccountLimitResetService {
                     subsidyAccountBalance.setSecureHash(computeHash(subsidyAccountBalance.getAvailableLiter()+""+subsidyAccountBalance.getAccount()));
                     subsidyAccountBalanceRepository.save(subsidyAccountBalance);
                     log.info("After update price reset by batch : "+subsidyAccountBalance);
-                }
             }
         }
         log.info("DiscountAccountLimitResetService task ended at :  "+ LocalDateTime.now());
