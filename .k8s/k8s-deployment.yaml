@@ -43,16 +43,16 @@ spec:
             value: "-Xms256m -Xmx256m -Djava.security.egd=file:/dev/./urandom"
           - name: TIME_ZONE
             value: "-Dlogback.timezone=Asia/Muscat"
-          - name: DB_FUELPAY_USERNAME
+          - name: DB_DFSS_USERNAME
             valueFrom:
               secretKeyRef:
                 name: fuel-pay-secret
-                key: db-fuelpay-username
-          - name: DB_FUELPAY_PASSWORD
+                key: db-dfss-username
+          - name: DB_DFSS_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: fuel-pay-secret
-                key: db-fuelpay-password        
+                key: db-dfss-password        
           - name: CARD_FUELPAY_KEYA
             valueFrom:
               secretKeyRef:
