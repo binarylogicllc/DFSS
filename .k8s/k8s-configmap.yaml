@@ -40,8 +40,8 @@ data:
         hikari:
           maximum-pool-size: '10'
           connection-init-sql: SET TIME ZONE 'Asia/Muscat'
-        password: ${DB_FUELPAY_PASSWORD}
-        username: ${DB_FUELPAY_USERNAME}
+        password: ${DB_DFSS_PASSWORD}
+        username: ${DB_DFSS_USERNAME}
         url: jdbc:postgresql://10.68.176.3:5432/fuelpay
       application:
         name: dfps
