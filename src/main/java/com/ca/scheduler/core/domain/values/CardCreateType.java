@@ -1,5 +1,5 @@
 package com.ca.scheduler.core.domain.values;
 
-public enum CardType {
-    NFC,TAG,VIRTUAL
+public enum CardCreateType {
+    SINGLE,BULK
 }

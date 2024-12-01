@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 @Table(name = "SUBSIDY_ACCOUNT_BALANCE")
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class SubsidyAccountBalance extends EntityAudit {
+public class SubsidyAccountBalance extends EntityAudit implements  AccountBalance{
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "subsidy_account_balance_seq")
     @SequenceGenerator(
@@ -42,4 +43,5 @@ public class SubsidyAccountBalance extends EntityAudit {
 
     @Column(name = "next_reset_at")
     private LocalDateTime nextResetAt;
+
 }

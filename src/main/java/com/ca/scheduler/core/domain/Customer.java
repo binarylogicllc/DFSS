@@ -1,11 +1,12 @@
 package com.ca.scheduler.core.domain;
 
-import com.ca.scheduler.core.domain.values.CustomerType;
+import com.ca.scheduler.core.domain.values.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -55,10 +56,10 @@ public class Customer extends EntityAudit {
     @Column(name = "CUSTOMER_TYPE")
     private CustomerType customerType;
 
-    @Column(name = "RECEIVED_DATE_TIME")
+    @Column(name = "RECEIVED_DATE_TIME",columnDefinition = "TIMESTAMP")
     private LocalDateTime receivedDateTime;
 
-    @Column(name = "MOG_REPORTED_TIME")
+    @Column(name = "MOG_REPORTED_TIME",columnDefinition = "TIMESTAMP")
     private LocalDateTime mogReportedTime;
 
     private String subsidyCode;
@@ -69,6 +70,9 @@ public class Customer extends EntityAudit {
     @Column(name = "VEHICLE_NO")
     private String vehicleNo;
 
+    @Column(name = "VEHICLE_CODE")
+    private String vehicleCode;
+
     @Type(type = "yes_no")
     @Column(name = "issue_card")
     private Boolean issueCard;
@@ -78,6 +82,18 @@ public class Customer extends EntityAudit {
     private Boolean cardIssued;
 
     @Type(type = "yes_no")
+    @Column(name = "virtual_card_issued")
+    private Boolean virtualCardIssued;
+
+    @Type(type = "yes_no")
+    @Column(name = "card_lost")
+    private Boolean cardLost;
+
+    @Type(type = "yes_no")
+    @Column(name = "card_damaged")
+    private Boolean cardDamaged;
+
+    @Type(type = "yes_no")
     @Column(name = "ACTIVE")
     private Boolean active;
 
@@ -85,4 +101,61 @@ public class Customer extends EntityAudit {
     @Column(name = "deleted")
     private Boolean deleted;
 
+    @Type(type = "yes_no")
+    @Column(name = "suspended")
+    private Boolean suspended;
+
+    @Column(name = "activation_end_date",columnDefinition = "TIMESTAMP")
+    private LocalDateTime activationEndDate;
+
+    @Column(name = "subsidy_card_expiry_date",columnDefinition = "TIMESTAMP")
+    private LocalDateTime subsidyCardExpiryDate;
+
+    @Column(name = "allowed_monthly_limit")
+    private BigDecimal allowedMonthlyLimit;
+
+    @Column(name = "available_monthly_limit")
+    private BigDecimal availableMonthlyLimit;
+
+    @Type(type = "yes_no")
+    @Column(name = "is_prepaid")
+    private Boolean isPrepaid;
+
+    @Type(type = "yes_no")
+    @Column(name = "is_corporate")
+    private Boolean isCorporate;
+
+    @Type(type = "yes_no")
+    @Column(name = "is_individual")
+    private Boolean isIndividual;
+
+    @Type(type = "yes_no")
+    @Column(name = "old_system")
+    private Boolean oldSystem;
+
+    @Column(name = "global_monthly_limit")
+    private BigDecimal globalMonthlyLimit;
+
+    @Column(name = "DOB")
+    private String dob;
+
+    @Type(type = "yes_no")
+    @Column(name = "nss_suspended")
+    private Boolean nssSuspended;
+
+    @Type(type = "yes_no")
+    @Column(name = "prepaid_suspended")
+    private Boolean prepaidSuspended;
+
+    @Type(type = "yes_no")
+    @Column(name = "corporate_suspended")
+    private Boolean corporateSuspended;
+
+    @Type(type = "yes_no")
+    @Column(name = "is_prepaid_virtual_card_issued")
+    private Boolean isPrepaidVirtualCardIssued;
+
+    @Type(type = "yes_no")
+    @Column(name = "is_fleet_plus")
+    private Boolean isFleetPlus;
 }

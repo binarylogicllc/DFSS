@@ -1,7 +1,6 @@
 package com.ca.scheduler.core.domain;
 
-import com.ca.scheduler.core.domain.values.AccountType;
-import lombok.Data;
+import com.ca.scheduler.core.domain.values.*;import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Type;
 
@@ -26,10 +25,10 @@ public class Account extends EntityAudit {
 	@Type(type = "yes_no")
 	private Boolean active;
 
-	@Column(name = "START_DATE")
+	@Column(name = "START_DATE",columnDefinition = "TIMESTAMP")
 	private LocalDateTime startDate;
 
-	@Column(name = "END_DATE")
+	@Column(name = "END_DATE",columnDefinition = "TIMESTAMP")
 	private LocalDateTime endDate;
 
 	@Column(name = "ACCOUNT_NAME")

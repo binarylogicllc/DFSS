@@ -1,6 +1,6 @@
 package com.ca.scheduler.core.domain;
 
-import com.ca.scheduler.core.domain.values.CardProductType;
+import com.ca.scheduler.core.domain.values.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Type;
@@ -82,13 +82,14 @@ public class CardProduct extends DomainBase{
     @Column(name = "DAMAGE_ACTIVATION_FEE")
     private BigDecimal damageActivationFee;
 
+
     @Column(name = "expiry")
     private Long expiry;
 
-    @Column(name = "START_DATE")
+    @Column(name = "START_DATE",columnDefinition = "TIMESTAMP")
     private LocalDateTime startDate;
 
-    @Column(name = "END_DATE")
+    @Column(name = "END_DATE",columnDefinition = "TIMESTAMP")
     private LocalDateTime endDate;
 
 }

@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Data
 @EqualsAndHashCode(callSuper=false)
 @NoArgsConstructor
-public class Device extends EntityAudit{
+public class Device  extends EntityAudit{
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "device_seq")

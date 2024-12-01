@@ -1,11 +1,11 @@
 package com.ca.scheduler.core.domain;
 
-import com.ca.scheduler.core.domain.values.ShiftStatus;
+import com.ca.scheduler.core.domain.values.*;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "shift")
@@ -32,13 +32,13 @@ public class Shift  extends EntityAudit {
     @Column(name = "attendant_id")
     private String attendantId;
 
-    @Column(name = "shift_start_time")
-    private LocalDateTime shiftStartTime;
+    @Column(name = "shift_start_time",columnDefinition = "TIMESTAMP")
+    private ZonedDateTime shiftStartTime;
 
-    @Column(name = "shift_end_time")
-    private LocalDateTime shiftEndTime;
+    @Column(name = "shift_end_time",columnDefinition = "TIMESTAMP")
+    private ZonedDateTime shiftEndTime;
 
-    @Column(name = "shift_date")
+    @Column(name = "shift_date",columnDefinition = "DATE")
     private LocalDate shiftDate;
 
     @Enumerated(EnumType.STRING)

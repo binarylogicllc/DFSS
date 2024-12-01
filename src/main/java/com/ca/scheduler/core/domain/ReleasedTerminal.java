@@ -1,6 +1,7 @@
 package com.ca.scheduler.core.domain;
 
 import lombok.*;
+
 import javax.persistence.*;
 
 /**

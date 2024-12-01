@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "station")
@@ -81,8 +82,18 @@ public class Station  extends EntityAudit {
     @Type(type = "yes_no")
     private Boolean repairWorkshop;
 
+    @Column(name = "open_24hr")
+    @Type(type = "yes_no")
+    private Boolean open24Hr;
+
+    @Column(name = "mosque")
+    @Type(type = "yes_no")
+    private Boolean mosque;
 
     @Column(name = "merchant_id")
     private String merchantId;
+
+    @Column(name = "topup_limit")
+    private BigDecimal topupLimit;
 
 }

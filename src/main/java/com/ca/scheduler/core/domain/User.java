@@ -1,6 +1,6 @@
 package com.ca.scheduler.core.domain;
 
-import com.ca.scheduler.core.domain.values.UserType;
+import com.ca.scheduler.core.domain.values.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Type;
@@ -60,14 +60,14 @@ public class User extends DomainBase{
 
     @Type(type = "yes_no")
     @Column(name = "DELETED")
-    private boolean deleted;
+    private Boolean deleted;
 
     @Type(type = "yes_no")
     @Column(name = "VERIFIED")
-    private boolean verified;
+    private Boolean verified;
 
     @Column(name = "EXPIRY")
-    private int expiry;
+    private Integer expiry;
 
     @Type(type = "yes_no")
     @Column(name = "force_password_change")
@@ -80,6 +80,13 @@ public class User extends DomainBase{
     private LocalDateTime passwordChanged;
 
     @Column(name = "login_attempts")
-    private int loginAttempts;
+    private Integer loginAttempts;
+
+    @Column(name = "device_id")
+    private String deviceId;
+
+    @Type(type = "yes_no")
+    @Column(name = "device_validation")
+    private Boolean deviceValidation;
 
 }

@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "fuel_product_rates")
 @Data
-@EqualsAndHashCode(callSuper=false)
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 public class FuelProductRates extends EntityAudit {
 
     @Id

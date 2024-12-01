@@ -1,13 +1,12 @@
 package com.ca.scheduler.core.domain;
 
+import com.ca.scheduler.core.domain.values.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "CARD_WHITELIST")
@@ -28,4 +27,22 @@ public class CardWhitelist extends EntityAudit{
     @Type(type = "yes_no")
     @Column(name = "ACTIVE")
     private Boolean active;
+
+    @Column(name = "CARD_PRODUCT_TYPE")
+    @Enumerated(EnumType.STRING)
+    private CardProductType cardProductType;
+
+    @Type(type = "yes_no")
+    @Column(name = "promotion_card")
+    private Boolean isPromotionCard;
+
+    @Column(name = "opening_balance")
+    private BigDecimal openingBalance;
+
+    @Column(name = "activation_fee")
+    private BigDecimal activationFee;
+
+    @Type(type = "yes_no")
+    @Column(name = "allowed_activation")
+    private Boolean allowedActivation;
 }

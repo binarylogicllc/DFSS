@@ -50,6 +50,9 @@ public class Merchant  extends EntityAudit {
     @Column(name = "vat_in")
     private String vatIn;
 
+    @Column(name = "WEBSITE_URL")
+    private String websiteURL;
+
     @Column(name = "address")
     private String address;
 

@@ -1,6 +1,6 @@
 package com.ca.scheduler.core.domain;
 
-import com.ca.scheduler.core.domain.values.QrType;
+import com.ca.scheduler.core.domain.values.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Type;

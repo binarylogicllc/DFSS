@@ -1,5 +1,6 @@
 package com.ca.scheduler.core.domain;
 
+import com.ca.scheduler.core.domain.values.*;
 import lombok.*;
 import org.hibernate.annotations.Type;
 
@@ -32,8 +33,9 @@ public class TerminalParameter extends EntityAudit {
     @Column(name = "terminal_id", nullable = false)
     private String terminalId;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "param_name")
-    private String paramName;
+    private ParamName paramName;
 
     @Column(name = "param_value")
     private String paramValue;

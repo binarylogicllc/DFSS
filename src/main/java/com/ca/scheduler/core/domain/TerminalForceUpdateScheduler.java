@@ -1,7 +1,9 @@
 package com.ca.scheduler.core.domain;
 
-import com.ca.scheduler.core.domain.values.ForceUpdateSchedulerStatus;
-import lombok.*;
+import com.ca.scheduler.core.domain.values.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -11,8 +13,6 @@ import java.time.LocalDateTime;
 @Table(name = "terminal_force_update_scheduler")
 @Data
 @EqualsAndHashCode(callSuper=false)
-@AllArgsConstructor
-@NoArgsConstructor
 public class TerminalForceUpdateScheduler extends EntityAudit{
 
     @Id

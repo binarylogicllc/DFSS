@@ -1,12 +1,14 @@
 package com.ca.scheduler.core.service;
 import com.ca.scheduler.core.dao.SubsidyAccountBalanceRepository;
 import com.ca.scheduler.core.dao.SubsidyProductRepository;
+import com.ca.scheduler.core.dao.TransactionRepository;
 import com.ca.scheduler.core.domain.SubsidyProduct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,9 @@ public class DiscountAccountLimitResetService {
 
     @Autowired
     private SubsidyAccountBalanceRepository subsidyAccountBalanceRepository;
+
+    @Autowired
+    TransactionRepository transactionRepository;
 
     @Autowired
     private SubsidyProductRepository subsidyProductRepository;
@@ -109,10 +114,10 @@ public class DiscountAccountLimitResetService {
             log.info("Processing batch page: " + page);
 
             // Fetch records in batches
-//            var subsidyAccountBalances = subsidyAccountBalanceRepository.findAll(PageRequest.of(page, batchSize));
+//            var subsidyAccountBalances = subsidyAccountBalanceRepository.findAll(PageRequest.of(page, batchSize, Sort.by("id").ascending()));
 //
             //2024-12-01 00:00:00.000 get the records which are not reset yet
-            var subsidyAccountBalances = subsidyAccountBalanceRepository.findByNextResetAtBefore(LocalDateTime.now(), PageRequest.of(page, batchSize));
+            var subsidyAccountBalances = subsidyAccountBalanceRepository.findByNextResetAtBefore(LocalDateTime.now(), PageRequest.of(page, batchSize, Sort.by("id").ascending()));
 
             if (!subsidyAccountBalances.hasContent()) {
                 break;
@@ -124,11 +129,13 @@ public class DiscountAccountLimitResetService {
             subsidyAccountBalances.forEach(subsidyAccountBalance -> {
                 log.info("Before LimitResetService Update  : " + subsidyAccountBalance);
 
+                //check if any transction is made for the current month
+
 //                        if (subsidyAccountBalance.getCurrentResetAt() != null && subsidyAccountBalance.getNextResetAt() != null &&
 //                                subsidyAccountBalance.getCurrentResetAt().isBefore(subsidyAccountBalance.getNextResetAt())
 //                                && subsidyAccountBalance.getNextResetAt().isBefore(LocalDateTime.now())) {
                 if (subsidyAccountBalance.getUpdatedAt() != null && subsidyAccountBalance.getNextResetAt() != null &&
-                        subsidyAccountBalance.getUpdatedAt().isBefore(subsidyAccountBalance.getNextResetAt())) {
+                        subsidyAccountBalance.getUpdatedAt().isAfter(subsidyAccountBalance.getNextResetAt())) {
                     log.info("Resetting the limit for this account : " + subsidyAccountBalance.getAccount());
                     subsidyAccountBalance.setAvailableLiter(subsidyAccountBalance.getAllocatedLiter());
                     subsidyAccountBalance.setUpdatedAt(LocalDateTime.now());

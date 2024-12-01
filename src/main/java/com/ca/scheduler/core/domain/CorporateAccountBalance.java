@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Table(name = "CORPORATE_ACCOUNT_BALANCE")
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class CorporateAccountBalance extends EntityAudit {
+public class CorporateAccountBalance extends EntityAudit implements  AccountBalance {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "corporate_account_balance_seq")
     @SequenceGenerator(
