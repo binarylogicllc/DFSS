@@ -1,7 +1,6 @@
 package com.ca.scheduler.core.service;
 import com.ca.scheduler.core.dao.SubsidyAccountBalanceRepository;
 import com.ca.scheduler.core.dao.SubsidyProductRepository;
-import com.ca.scheduler.core.domain.SubsidyAccountBalance;
 import com.ca.scheduler.core.domain.SubsidyProduct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.HmacUtils;
@@ -15,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @Slf4j
@@ -40,7 +39,7 @@ public class DiscountAccountLimitResetService {
 
     @PostConstruct
     public void runImmediately() {
-        processImmediately();
+        processMismatch();
     }
 
     @Transactional
@@ -138,6 +137,61 @@ public class DiscountAccountLimitResetService {
             });
             page++;
         }
+        log.info("LimitResetService task ended at :  " + LocalDateTime.now());
+        log.info("***********************************END*********************************************");
+    }
+
+
+    @Transactional
+    public void processMismatch() {
+        log.info("====================================START==========================================");
+        log.info("LimitResetService task started at :  " + LocalDateTime.now());
+
+        Optional<SubsidyProduct> subsidyProduct = subsidyProductRepository.findBySubsidyCode(subsidyCode);
+        if (!subsidyProduct.isPresent()) {
+            log.error("Subsidy product not found: " + subsidyCode);
+            return;
+        }
+
+        int batchSize = 1000; // Number of records to process per batch
+        int page = 0; // Start with the first page
+
+        AtomicInteger count = new AtomicInteger();
+
+        while (true) {
+            log.info("Processing batch page: " + page);
+
+            // Fetch records in batches
+            var subsidyAccountBalances = subsidyAccountBalanceRepository.findAll(PageRequest.of(page, batchSize));
+            if (!subsidyAccountBalances.hasContent()) {
+                break;
+            }else{
+                log.info("Total records in this batch : "+subsidyAccountBalances.getNumberOfElements());
+            }
+            // Process each record in the batch
+            subsidyAccountBalances.forEach(subsidyAccountBalance -> {
+                log.info("Before LimitResetService Update  : " + subsidyAccountBalance);
+                if (subsidyAccountBalance.getCurrentResetAt() != null && subsidyAccountBalance.getNextResetAt() != null &&
+                        subsidyAccountBalance.getCurrentResetAt().isEqual(subsidyAccountBalance.getNextResetAt())
+                        && subsidyAccountBalance.getUpdatedAt().isBefore(subsidyAccountBalance.getCurrentResetAt())) {
+                    log.info("Resetting the limit for this account : " + subsidyAccountBalance.getAccount());
+                    subsidyAccountBalance.setAvailableLiter(subsidyAccountBalance.getAllocatedLiter());
+                    subsidyAccountBalance.setUpdatedAt(LocalDateTime.now());
+                    subsidyAccountBalance.setUpdatedBy("MISMATCH");
+                    subsidyAccountBalance.setCurrentResetAt(LocalDateTime.now());
+                    subsidyAccountBalance.setNextResetAt(subsidyAccountBalance.getNextResetAt().plusMonths(1));
+                    subsidyAccountBalance.setSecureHash(computeHash(subsidyAccountBalance.getAvailableLiter() + "" + subsidyAccountBalance.getAccount()));
+                    subsidyAccountBalanceRepository.save(subsidyAccountBalance);
+                    count.getAndIncrement();
+                    log.info("After LimitResetService Update : " + subsidyAccountBalance);
+                } else {
+                    log.info("No need to reset the limit for this account : " + subsidyAccountBalance.getAccount());
+                }
+            });
+            page++;
+        }
+
+        log.info("Total records updated : "+count);
         log.info("LimitResetService task ended at :  " + LocalDateTime.now());
         log.info("***********************************END*********************************************");
     }
