@@ -42,10 +42,10 @@ public class DiscountAccountLimitResetService {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
-    @PostConstruct
-    public void runImmediately() {
-        processImmediately();
-    }
+//    @PostConstruct
+//    public void runImmediately() {
+//        process();
+//    }
 
     @Transactional
     @Scheduled(cron = "0 0 0 1 1/1 *")
@@ -62,12 +62,13 @@ public class DiscountAccountLimitResetService {
             return;
         }
 
-        int batchSize = 1000;
+        int batchSize = 10000;
         int page = 0;
+        AtomicInteger count = new AtomicInteger();
 
         while (true) {
             log.info("Processing batch page: " + page);
-            var subsidyAccountBalances = subsidyAccountBalanceRepository.findAll(PageRequest.of(page, batchSize));
+            var subsidyAccountBalances = subsidyAccountBalanceRepository.findAll(PageRequest.of(page, batchSize,Sort.by("id").ascending()));
             if (!subsidyAccountBalances.hasContent()) {
                 break;
             } else {
@@ -84,10 +85,11 @@ public class DiscountAccountLimitResetService {
                 subsidyAccountBalance.setSecureHash(computeHash(subsidyAccountBalance.getAvailableLiter() + "" + subsidyAccountBalance.getAccount()));
                 subsidyAccountBalanceRepository.save(subsidyAccountBalance);
                 log.info("After update: " + subsidyAccountBalance);
+                count.getAndIncrement();
             });
             page++;
         }
-
+        log.info("Total records updated: " + count.get());
         log.info("DiscountAccountLimitResetService task ended at: " + LocalDateTime.now());
         log.info("***********************************END*********************************************");
         redisTemplate.delete("MONTHLY::BATCH");
@@ -96,64 +98,64 @@ public class DiscountAccountLimitResetService {
 
 
 
-    @Transactional
-    public void processImmediately() {
-        log.info("====================================START==========================================");
-        log.info("LimitResetService task started at :  " + LocalDateTime.now());
-
-        Optional<SubsidyProduct> subsidyProduct = subsidyProductRepository.findBySubsidyCode(subsidyCode);
-        if (!subsidyProduct.isPresent()) {
-            log.error("Subsidy product not found: " + subsidyCode);
-            return;
-        }
-
-        int batchSize = 1000; // Number of records to process per batch
-        int page = 0; // Start with the first page
-
-        while (true) {
-            log.info("Processing batch page: " + page);
-
-            // Fetch records in batches
-//            var subsidyAccountBalances = subsidyAccountBalanceRepository.findAll(PageRequest.of(page, batchSize, Sort.by("id").ascending()));
+//    @Transactional
+//    public void processImmediately() {
+//        log.info("====================================START==========================================");
+//        log.info("LimitResetService task started at :  " + LocalDateTime.now());
 //
-            //2024-12-01 00:00:00.000 get the records which are not reset yet
-            var subsidyAccountBalances = subsidyAccountBalanceRepository.findByNextResetAtBefore(LocalDateTime.now(), PageRequest.of(page, batchSize, Sort.by("id").ascending()));
-
-            if (!subsidyAccountBalances.hasContent()) {
-                break;
-            }else{
-                log.info("Total records in this batch : "+subsidyAccountBalances.getNumberOfElements());
-            }
-
-            // Process each record in the batch
-            subsidyAccountBalances.forEach(subsidyAccountBalance -> {
-                log.info("Before LimitResetService Update  : " + subsidyAccountBalance);
-
-                //check if any transction is made for the current month
-
-//                        if (subsidyAccountBalance.getCurrentResetAt() != null && subsidyAccountBalance.getNextResetAt() != null &&
-//                                subsidyAccountBalance.getCurrentResetAt().isBefore(subsidyAccountBalance.getNextResetAt())
-//                                && subsidyAccountBalance.getNextResetAt().isBefore(LocalDateTime.now())) {
-                if (subsidyAccountBalance.getUpdatedAt() != null && subsidyAccountBalance.getNextResetAt() != null &&
-                        subsidyAccountBalance.getUpdatedAt().isAfter(subsidyAccountBalance.getNextResetAt())) {
-                    log.info("Resetting the limit for this account : " + subsidyAccountBalance.getAccount());
-                    subsidyAccountBalance.setAvailableLiter(subsidyAccountBalance.getAllocatedLiter());
-                    subsidyAccountBalance.setUpdatedAt(LocalDateTime.now());
-                    subsidyAccountBalance.setUpdatedBy("Batch");
-                    subsidyAccountBalance.setCurrentResetAt(LocalDateTime.now());
-                    subsidyAccountBalance.setNextResetAt(subsidyAccountBalance.getNextResetAt().plusMonths(1));
-                    subsidyAccountBalance.setSecureHash(computeHash(subsidyAccountBalance.getAvailableLiter() + "" + subsidyAccountBalance.getAccount()));
-                    subsidyAccountBalanceRepository.save(subsidyAccountBalance);
-                    log.info("After LimitResetService Update : " + subsidyAccountBalance);
-                } else {
-                    log.info("No need to reset the limit for this account : " + subsidyAccountBalance.getAccount());
-                }
-            });
-            page++;
-        }
-        log.info("LimitResetService task ended at :  " + LocalDateTime.now());
-        log.info("***********************************END*********************************************");
-    }
+//        Optional<SubsidyProduct> subsidyProduct = subsidyProductRepository.findBySubsidyCode(subsidyCode);
+//        if (!subsidyProduct.isPresent()) {
+//            log.error("Subsidy product not found: " + subsidyCode);
+//            return;
+//        }
+//
+//        int batchSize = 1000; // Number of records to process per batch
+//        int page = 0; // Start with the first page
+//
+//        while (true) {
+//            log.info("Processing batch page: " + page);
+//
+//            // Fetch records in batches
+////            var subsidyAccountBalances = subsidyAccountBalanceRepository.findAll(PageRequest.of(page, batchSize, Sort.by("id").ascending()));
+////
+//            //2024-12-01 00:00:00.000 get the records which are not reset yet
+//            var subsidyAccountBalances = subsidyAccountBalanceRepository.findByNextResetAtBefore(LocalDateTime.now(), PageRequest.of(page, batchSize, Sort.by("id").ascending()));
+//
+//            if (!subsidyAccountBalances.hasContent()) {
+//                break;
+//            }else{
+//                log.info("Total records in this batch : "+subsidyAccountBalances.getNumberOfElements());
+//            }
+//
+//            // Process each record in the batch
+//            subsidyAccountBalances.forEach(subsidyAccountBalance -> {
+//                log.info("Before LimitResetService Update  : " + subsidyAccountBalance);
+//
+//                //check if any transction is made for the current month
+//
+////                        if (subsidyAccountBalance.getCurrentResetAt() != null && subsidyAccountBalance.getNextResetAt() != null &&
+////                                subsidyAccountBalance.getCurrentResetAt().isBefore(subsidyAccountBalance.getNextResetAt())
+////                                && subsidyAccountBalance.getNextResetAt().isBefore(LocalDateTime.now())) {
+//                if (subsidyAccountBalance.getUpdatedAt() != null && subsidyAccountBalance.getNextResetAt() != null &&
+//                        subsidyAccountBalance.getUpdatedAt().isAfter(subsidyAccountBalance.getNextResetAt())) {
+//                    log.info("Resetting the limit for this account : " + subsidyAccountBalance.getAccount());
+//                    subsidyAccountBalance.setAvailableLiter(subsidyAccountBalance.getAllocatedLiter());
+//                    subsidyAccountBalance.setUpdatedAt(LocalDateTime.now());
+//                    subsidyAccountBalance.setUpdatedBy("Batch");
+//                    subsidyAccountBalance.setCurrentResetAt(LocalDateTime.now());
+//                    subsidyAccountBalance.setNextResetAt(subsidyAccountBalance.getNextResetAt().plusMonths(1));
+//                    subsidyAccountBalance.setSecureHash(computeHash(subsidyAccountBalance.getAvailableLiter() + "" + subsidyAccountBalance.getAccount()));
+//                    subsidyAccountBalanceRepository.save(subsidyAccountBalance);
+//                    log.info("After LimitResetService Update : " + subsidyAccountBalance);
+//                } else {
+//                    log.info("No need to reset the limit for this account : " + subsidyAccountBalance.getAccount());
+//                }
+//            });
+//            page++;
+//        }
+//        log.info("LimitResetService task ended at :  " + LocalDateTime.now());
+//        log.info("***********************************END*********************************************");
+//    }
 
 
 
