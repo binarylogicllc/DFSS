@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import org.hibernate.annotations.Type;
-
+import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
