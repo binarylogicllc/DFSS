@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @Table(name = "terminal_force_update_scheduler")
 @Data
 @EqualsAndHashCode(callSuper=false)
+@AllArgsConstructor
+@NoArgsConstructor
 public class TerminalForceUpdateScheduler extends EntityAudit{
 
     @Id
