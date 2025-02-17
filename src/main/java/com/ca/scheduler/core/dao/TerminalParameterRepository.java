@@ -10,5 +10,5 @@ public interface TerminalParameterRepository extends JpaRepository<TerminalParam
 {
     Optional<List<TerminalParameter>> findByTerminalId(String terminalId);
 
-    Optional<TerminalParameter> findByTerminalIdAndParamName(String terminalId, String paramName);
+    Optional<TerminalParameter> findByTerminalIdAndParamName(String terminalId, ParamName paramName);
 }
