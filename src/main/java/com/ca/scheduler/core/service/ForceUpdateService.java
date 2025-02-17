@@ -102,19 +102,19 @@ public class ForceUpdateService {
                     log.info("Updating Terminal as force update :  " + terminal);
 
                     FuelProductRates fuelProductRatesMoGas91 = fuelProductRatesRepository.findByFuelProduct("MOGAS-91").get();
-                    TerminalParameter terminalParameter = terminalParameterRepository.findByTerminalIdAndParamName(terminal.getTerminalId(), ParamName.MOGAS91_RATE.name()).get();
+                    TerminalParameter terminalParameter = terminalParameterRepository.findByTerminalIdAndParamName(terminal.getTerminalId(), ParamName.MOGAS91_RATE).get();
                     terminalParameter.setParamValue(fuelProductRatesMoGas91.getRate().toPlainString());
                     terminalParameterRepository.save(terminalParameter);
                     log.info("Updating TerminalParam :  " + terminalParameter);
 
                     FuelProductRates fuelProductRatesMoGas95 = fuelProductRatesRepository.findByFuelProduct("MOGAS-95").get();
-                    terminalParameter = terminalParameterRepository.findByTerminalIdAndParamName(terminal.getTerminalId(), ParamName.MOGAS95_RATE.name()).get();
+                    terminalParameter = terminalParameterRepository.findByTerminalIdAndParamName(terminal.getTerminalId(), ParamName.MOGAS95_RATE).get();
                     terminalParameter.setParamValue(fuelProductRatesMoGas95.getRate().toPlainString());
                     terminalParameterRepository.save(terminalParameter);
                     log.info("Updating TerminalParam :  " + terminalParameter);
 
                     FuelProductRates fuelProductRatesDieselGo = fuelProductRatesRepository.findByFuelProduct("DIESEL-GO").get();
-                    terminalParameter = terminalParameterRepository.findByTerminalIdAndParamName(terminal.getTerminalId(), ParamName.DIESELGO_RATE.name()).get();
+                    terminalParameter = terminalParameterRepository.findByTerminalIdAndParamName(terminal.getTerminalId(), ParamName.DIESELGO_RATE).get();
                     terminalParameter.setParamValue(fuelProductRatesDieselGo.getRate().toPlainString());
                     terminalParameterRepository.save(terminalParameter);
 
