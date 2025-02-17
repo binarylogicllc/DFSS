@@ -2,7 +2,7 @@ package com.ca.scheduler.core.dao;
 
 import com.ca.scheduler.core.domain.TerminalParameter;
 import org.springframework.data.jpa.repository.JpaRepository;
-
+import com.ca.scheduler.core.domain.values.ParamName;
 import java.util.List;
 import java.util.Optional;
 
