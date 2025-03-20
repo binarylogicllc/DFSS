@@ -218,7 +218,14 @@ public class Batch  extends EntityAudit {
     private BigDecimal cstoreAmt;
     @Column(name = "cstore_qty")
     private BigDecimal cstoreQty;
-
+    @Column(name = "power_98_amt")
+    private BigDecimal power98Amt ;
+    @Column(name = "power_98_qty")
+    private BigDecimal power98Qty;
+    @Column(name = "power_plus_amt")
+    private BigDecimal powerPlusAmt ;
+    @Column(name = "power_plus_qty")
+    private BigDecimal powerPlusQty;
 
     @Column(name = "cash_mogas_91_amt")
     private BigDecimal cashMogas91Amt;
@@ -245,6 +252,13 @@ public class Batch  extends EntityAudit {
     @Column(name = "cash_cstore_qty")
     private BigDecimal cashCstoreQty;
 
-
+    @Column(name = "cash_power_98_amt")
+    private BigDecimal cashPower98Amt ;
+    @Column(name = "cash_power_98_qty")
+    private BigDecimal cashPower98Qty;
+    @Column(name = "cash_power_plus_amt")
+    private BigDecimal cashPowerPlusAmt ;
+    @Column(name = "cash_power_plus_qty")
+    private BigDecimal cashPowerPlusQty;
 
 }

@@ -42,91 +42,87 @@ public class ForceUpdateService {
 
     @Scheduled(fixedRateString = "${scheduler.fixedDelay}")
     public void process() {
-
         Optional<List<TerminalForceUpdateScheduler>> terminalForceUpdateSchedulerOptionals = terminalForceUpdateSchedulerRepository.findByScheduledAtLessThanAndStatus(LocalDateTime.now(), ForceUpdateSchedulerStatus.NEW);
 
-        if(!terminalForceUpdateSchedulerOptionals.isPresent() || terminalForceUpdateSchedulerOptionals.get().size() == 0 ){
+        if (!terminalForceUpdateSchedulerOptionals.isPresent() || terminalForceUpdateSchedulerOptionals.get().isEmpty()) {
             return;
         }
 
-        for(TerminalForceUpdateScheduler terminalForceUpdateScheduler : terminalForceUpdateSchedulerOptionals.get()) {
-
-
-            log.info("Scheduler Task Found  :  "+terminalForceUpdateScheduler);
+        for (TerminalForceUpdateScheduler terminalForceUpdateScheduler : terminalForceUpdateSchedulerOptionals.get()) {
+            log.info("Scheduler Task Found  :  " + terminalForceUpdateScheduler);
 
             terminalForceUpdateScheduler.setStatus(ForceUpdateSchedulerStatus.IN_PROGRESS);
             terminalForceUpdateSchedulerRepository.save(terminalForceUpdateScheduler);
 
             try {
                 List<Merchant> merchants = new ArrayList<>();
-                if (terminalForceUpdateScheduler.getMerchantId() != null && terminalForceUpdateScheduler.getMerchantId().equals("All")) {
+                if ("all".equalsIgnoreCase(terminalForceUpdateScheduler.getMerchantId())) {
                     merchants = merchantRepository.findAll();
                 } else {
-                    merchants.add(merchantRepository.findByMerchantId(terminalForceUpdateScheduler.getMerchantId()).get());
+                    merchantRepository.findByMerchantId(terminalForceUpdateScheduler.getMerchantId()).ifPresent(merchants::add);
                 }
 
                 log.info("Updating Merchants:  " + merchants);
 
                 List<Station> stations = new ArrayList<>();
-
                 for (Merchant merchant : merchants) {
-                    if (terminalForceUpdateScheduler.getStationId() != null && terminalForceUpdateScheduler.getStationId().equals("All")) {
-                       Optional<List<Station>> stationList = stationRepository.findByMerchantId(merchant.getMerchantId());
-                       if(stationList.isPresent()) {
-                           stations = stationList.get();
-                       }
+                    if ("all".equalsIgnoreCase(terminalForceUpdateScheduler.getStationId())) {
+                        stationRepository.findByMerchantId(merchant.getMerchantId()).ifPresent(stations::addAll);
                     } else {
-                        stations.add(stationRepository.findByMerchantIdAndStationId(merchant.getMerchantId(), terminalForceUpdateScheduler.getStationId()).get());
+                        stationRepository.findByMerchantIdAndStationId(merchant.getMerchantId(), terminalForceUpdateScheduler.getStationId()).ifPresent(stations::add);
                     }
                 }
+
                 log.info("Updating Stations:   " + stations);
 
                 List<Terminal> terminals = new ArrayList<>();
                 for (Station station : stations) {
-                    if (terminalForceUpdateScheduler.getTerminalId() != null && terminalForceUpdateScheduler.getTerminalId().equals("All")) {
-                        Optional<List<Terminal>> terminalList = terminalRepository.findByStationId(station.getStationId());
-                        if(terminalList.isPresent()) {
-                            terminals = terminalList.get();
-                        }
+                    if ("all".equalsIgnoreCase(terminalForceUpdateScheduler.getTerminalId())) {
+                        log.info("Updating Terminals for Station :  " + station);
+                        terminalRepository.findByStationId(station.getStationId()).ifPresent(terminals::addAll);
                     } else {
-                        terminals.add(terminalRepository.findByTerminalId(terminalForceUpdateScheduler.getTerminalId()).get());
+                        log.info("Updating Terminal for Station :  " + station);
+                        terminalRepository.findByTerminalId(terminalForceUpdateScheduler.getTerminalId()).ifPresent(terminals::add);
                     }
                 }
+
                 log.info("Updating Terminals   " + terminals);
 
                 for (Terminal terminal : terminals) {
-
                     terminal.setForceUpdate(Boolean.TRUE);
                     terminal.setForceUpdateActivateTime(LocalDateTime.now());
                     terminalRepository.save(terminal);
                     log.info("Updating Terminal as force update :  " + terminal);
 
-                    FuelProductRates fuelProductRatesMoGas91 = fuelProductRatesRepository.findByFuelProduct("MOGAS-91").get();
-                    TerminalParameter terminalParameter = terminalParameterRepository.findByTerminalIdAndParamName(terminal.getTerminalId(), ParamName.MOGAS91_RATE).get();
-                    terminalParameter.setParamValue(fuelProductRatesMoGas91.getRate().toPlainString());
-                    terminalParameterRepository.save(terminalParameter);
-                    log.info("Updating TerminalParam :  " + terminalParameter);
-
-                    FuelProductRates fuelProductRatesMoGas95 = fuelProductRatesRepository.findByFuelProduct("MOGAS-95").get();
-                    terminalParameter = terminalParameterRepository.findByTerminalIdAndParamName(terminal.getTerminalId(), ParamName.MOGAS95_RATE).get();
-                    terminalParameter.setParamValue(fuelProductRatesMoGas95.getRate().toPlainString());
-                    terminalParameterRepository.save(terminalParameter);
-                    log.info("Updating TerminalParam :  " + terminalParameter);
-
-                    FuelProductRates fuelProductRatesDieselGo = fuelProductRatesRepository.findByFuelProduct("DIESEL-GO").get();
-                    terminalParameter = terminalParameterRepository.findByTerminalIdAndParamName(terminal.getTerminalId(), ParamName.DIESELGO_RATE).get();
-                    terminalParameter.setParamValue(fuelProductRatesDieselGo.getRate().toPlainString());
-                    terminalParameterRepository.save(terminalParameter);
-
-                    log.info("Updating TerminalParam :  " + terminalParameter);
+                    updateTerminalParameter(terminal, "MOGAS-91", ParamName.MOGAS91_RATE);
+                    updateTerminalParameter(terminal, "MOGAS-95", ParamName.MOGAS95_RATE);
+                    updateTerminalParameter(terminal, "DIESEL-GO", ParamName.DIESELGO_RATE);
+                    updateTerminalParameter(terminal, "POWER-98", ParamName.POWER98_RATE);
+                    updateTerminalParameter(terminal, "POWER-PLUS", ParamName.POWERPLUS_RATE);
                 }
+
                 terminalForceUpdateScheduler.setStatus(ForceUpdateSchedulerStatus.COMPLETED);
-            }catch (Exception e){
-                log.error("Error Force Update  Failed",e);
+            } catch (Exception e) {
+                log.error("Error Force Update  Failed", e);
                 terminalForceUpdateScheduler.setStatus(ForceUpdateSchedulerStatus.FAILED);
             }
             terminalForceUpdateSchedulerRepository.save(terminalForceUpdateScheduler);
         }
     }
 
+    private void updateTerminalParameter(Terminal terminal, String fuelProduct, ParamName paramName) {
+        fuelProductRatesRepository.findByFuelProduct(fuelProduct).ifPresent(fuelProductRates -> {
+            log.info("Fuel Product Rates :  " + fuelProductRates);
+            Optional<TerminalParameter> terminalParameterOptional = terminalParameterRepository.findByTerminalIdAndParamName(terminal.getTerminalId(), paramName);
+            TerminalParameter terminalParameter = terminalParameterOptional.orElseGet(() -> {
+                TerminalParameter newTerminalParameter = new TerminalParameter();
+                newTerminalParameter.setTerminalId(terminal.getTerminalId());
+                newTerminalParameter.setParamName(paramName);
+                return newTerminalParameter;
+            });
+            terminalParameter.setParamValue(fuelProductRates.getRate().toPlainString());
+            terminalParameterRepository.save(terminalParameter);
+            log.info((terminalParameterOptional.isPresent() ? "Updating" : "Creating") + " TerminalParam :  " + terminalParameter);
+        });
+    }
 }
