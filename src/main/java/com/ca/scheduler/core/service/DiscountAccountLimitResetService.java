@@ -42,10 +42,10 @@ public class DiscountAccountLimitResetService {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
-//    @PostConstruct
-//    public void runImmediately() {
-//        process();
-//    }
+   @PostConstruct
+   public void runImmediately() {
+       process();
+   }
 
     @Transactional
     @Scheduled(cron = "0 0 0 1 1/1 *")
