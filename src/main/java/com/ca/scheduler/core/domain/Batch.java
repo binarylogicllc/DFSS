@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Batch  extends EntityAudit {
 
-    @Id
+        @Id
     @NonNull
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "batch_seq")
     @SequenceGenerator(
@@ -218,14 +218,16 @@ public class Batch  extends EntityAudit {
     private BigDecimal cstoreAmt;
     @Column(name = "cstore_qty")
     private BigDecimal cstoreQty;
-    @Column(name = "power_98_amt")
-    private BigDecimal power98Amt ;
-    @Column(name = "power_98_qty")
-    private BigDecimal power98Qty;
-    @Column(name = "power_plus_amt")
-    private BigDecimal powerPlusAmt ;
-    @Column(name = "power_plus_qty")
-    private BigDecimal powerPlusQty;
+
+    // New naming convention fields
+    @Column(name = "power_plus_98_amt")
+    private BigDecimal powerPlus98Amt;
+    @Column(name = "power_plus_98_qty")
+    private BigDecimal powerPlus98Qty;
+    @Column(name = "ultra_amt")
+    private BigDecimal ultraAmt;
+    @Column(name = "ultra_qty")
+    private BigDecimal ultraQty;
 
     @Column(name = "cash_mogas_91_amt")
     private BigDecimal cashMogas91Amt;
@@ -252,13 +254,14 @@ public class Batch  extends EntityAudit {
     @Column(name = "cash_cstore_qty")
     private BigDecimal cashCstoreQty;
 
-    @Column(name = "cash_power_98_amt")
-    private BigDecimal cashPower98Amt ;
-    @Column(name = "cash_power_98_qty")
-    private BigDecimal cashPower98Qty;
-    @Column(name = "cash_power_plus_amt")
-    private BigDecimal cashPowerPlusAmt ;
-    @Column(name = "cash_power_plus_qty")
-    private BigDecimal cashPowerPlusQty;
+    // New naming convention fields
+    @Column(name = "cash_power_plus_98_amt")
+    private BigDecimal cashPowerPlus98Amt;
+    @Column(name = "cash_power_plus_98_qty")
+    private BigDecimal cashPowerPlus98Qty;
+    @Column(name = "cash_ultra_amt")
+    private BigDecimal cashUltraAmt;
+    @Column(name = "cash_ultra_qty")
+    private BigDecimal cashUltraQty;
 
 }
